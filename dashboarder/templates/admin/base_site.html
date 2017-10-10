@@ -1,0 +1,58 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block branding %}{{ site_header|default:_('Django administration') }}{% endblock %}
+
+{% block extrastyle %}
+<style>
+/* Style for selector widget */
+.selector h2 {
+  text-transform:uppercase;
+  font-size:1em;
+}
+
+.selector, .selector select, .selector input, .datetime, .related-widget-wrapper {
+  width:100%;
+}
+
+.selector-filter label {
+  display: none;
+}
+
+.selector-chooser {
+  order-bottom: 1px solid #ddd;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+.selector-chooser li {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+a, a:hover {
+  text-decoration: none;
+  color: black;
+}
+</style>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block extrahead %}
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="{% static "js/bootstrap.min.js" %}"></script>
+
+{% endblock %}

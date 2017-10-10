@@ -1,0 +1,30 @@
+{% load widget_tweaks %}
+<fieldset class="module aligned {{ fieldset.classes }}">
+    {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+    {% if fieldset.description %}
+        <div class="description">{{ fieldset.description|safe }}</div>
+    {% endif %}
+    {% for line in fieldset %}
+        <div class="{% if line.fields|length_is:'1' and line.errors %} errors{% endif %}{% if not line.has_visible_field %} hidden{% endif %}{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
+            {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
+            {% for field in line %}
+                <div class="form-group row">
+                    {% if field.is_checkbox %}
+                      <label class="col-sm-3 col-form-label">{{ field.field.label }}</label>
+                      <label class="col-sm-9"> {{ field.field|add_class:"form-check-input" }} </label>
+                    {% else %}
+                        <label class="col-form-label col-sm-3">{{ field.field.label }}</label>
+                        {% if field.is_readonly %}
+                            <div class="form-control-plaintext readonly">{{ field.contents }}</div>
+                        {% else %}
+                            <div class="col-sm-9"> {{ field.field|add_class:"form-control" }}</div>
+                        {% endif %}
+                    {% endif %}
+                    {% if field.field.help_text %}
+                        <small class="col-sm-12 form-text text-muted help">{{ field.field.help_text|safe }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</fieldset>

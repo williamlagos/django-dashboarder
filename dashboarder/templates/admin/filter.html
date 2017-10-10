@@ -1,0 +1,7 @@
+{% load i18n %}
+<p class="card-text mb-2 text-muted">{% blocktrans with filter_title=title %} By {{ filter_title }} {% endblocktrans %}</h3>
+<ul class="p-0">
+{% for choice in choices %}
+  <a href="{{ choice.query_string|iriencode }}" title="{{ choice.display }}" class="card-link">{{ choice.display }}</a>
+{% endfor %}
+</ul>
