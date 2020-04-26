@@ -8,15 +8,16 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-dashboarder',
-    version='0.1.0',
+    version='0.1.2',
     packages=['dashboarder'],
     include_package_data=True,
     license='LGPLv3 License',
     description='A Django app to create fancy admin interface.',
     long_description=README,
-    url='http://www.efforia.io/opensource/',
+    long_description_content_type='text/markdown',
+    url='https://williamlagos.github.io/',
     author='William Oliveira de Lagos',
-    author_email='ola@efforia.io',
+    author_email='william.lagos@icloud.com',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
