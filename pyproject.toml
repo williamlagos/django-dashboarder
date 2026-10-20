@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-dashboarder"
+version = "0.2.0"
+description = "A modernized Django app to create custom, responsive administration dashboards."
+readme = "README.md"
+license = { text = "LGPL-3.0-or-later" }
+authors = [{ name = "William Oliveira de Lagos", email = "william.lagos@icloud.com" }]
+requires-python = ">=3.8"
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+dependencies = [
+    "django>=3.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/williamlagos/django-dashboarder"
+Repository = "https://github.com/williamlagos/django-dashboarder.git"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.1.0",
+    "pytest>=7.0",
+    "pytest-django>=4.5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["dashboarder"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+pythonpath = ["."]
+testpaths = ["dashboarder"]
+python_files = ["tests.py", "test_*.py"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = [
+    "E501",  # line too long
+    "F401",  # unused imports
+    "E402",  # module import order
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
