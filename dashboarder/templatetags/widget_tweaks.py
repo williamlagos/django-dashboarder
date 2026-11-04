@@ -1,7 +1,9 @@
 import re
 import types
 from copy import copy
-from django.template import Library, Node, Variable, TemplateSyntaxError
+
+from django.template import Library, Node, TemplateSyntaxError, Variable
+
 register = Library()
 
 
@@ -10,15 +12,16 @@ def silence_without_field(fn):
         if not field:
             return ""
         return fn(field, attr)
+
     return wrapped
 
 
 def _process_field_attributes(field, attr, process):
 
     # split attribute name and value from 'attr:value' string
-    params = attr.split(':', 1)
+    params = attr.split(":", 1)
     attribute = params[0]
-    value = params[1] if len(params) == 2 else ''
+    value = params[1] if len(params) == 2 else ""
 
     field = copy(field)
 
@@ -49,7 +52,7 @@ def set_attr(field, attr):
 @register.filter("add_error_attr")
 @silence_without_field
 def add_error_attr(field, attr):
-    if hasattr(field, 'errors') and field.errors:
+    if hasattr(field, "errors") and field.errors:
         return set_attr(field, attr)
     return field
 
@@ -59,24 +62,25 @@ def add_error_attr(field, attr):
 def append_attr(field, attr):
     def process(widget, attrs, attribute, value):
         if attrs.get(attribute):
-            attrs[attribute] += ' ' + value
+            attrs[attribute] += " " + value
         elif widget.attrs.get(attribute):
-            attrs[attribute] = widget.attrs[attribute] + ' ' + value
+            attrs[attribute] = widget.attrs[attribute] + " " + value
         else:
             attrs[attribute] = value
+
     return _process_field_attributes(field, attr, process)
 
 
 @register.filter("add_class")
 @silence_without_field
 def add_class(field, css_class):
-    return append_attr(field, 'class:' + css_class)
+    return append_attr(field, "class:" + css_class)
 
 
 @register.filter("add_error_class")
 @silence_without_field
 def add_error_class(field, css_class):
-    if hasattr(field, 'errors') and field.errors:
+    if hasattr(field, "errors") and field.errors:
         return add_class(field, css_class)
     return field
 
@@ -84,36 +88,41 @@ def add_error_class(field, css_class):
 @register.filter("set_data")
 @silence_without_field
 def set_data(field, data):
-    return set_attr(field, 'data-' + data)
+    return set_attr(field, "data-" + data)
 
 
-@register.filter(name='field_type')
+@register.filter(name="field_type")
 def field_type(field):
     """
     Template filter that returns field class name (in lower case).
     E.g. if field is CharField then {{ field|field_type }} will
     return 'charfield'.
     """
-    if hasattr(field, 'field') and field.field:
+    if hasattr(field, "field") and field.field:
         return field.field.__class__.__name__.lower()
-    return ''
+    return ""
 
 
-@register.filter(name='widget_type')
+@register.filter(name="widget_type")
 def widget_type(field):
     """
     Template filter that returns field widget class name (in lower case).
     E.g. if field's widget is TextInput then {{ field|widget_type }} will
     return 'textinput'.
     """
-    if hasattr(field, 'field') and hasattr(field.field, 'widget') and field.field.widget:
+    if (
+        hasattr(field, "field")
+        and hasattr(field.field, "widget")
+        and field.field.widget
+    ):
         return field.field.widget.__class__.__name__.lower()
-    return ''
+    return ""
 
 
 # ======================== render_field tag ==============================
 
-ATTRIBUTE_RE = re.compile(r"""
+ATTRIBUTE_RE = re.compile(
+    r"""
     (?P<attr>
         [\w_-]+
     )
@@ -125,7 +134,10 @@ ATTRIBUTE_RE = re.compile(r"""
         [^"']*
     ['"]? # end quote
     )
-""", re.VERBOSE | re.UNICODE)
+""",
+    re.VERBOSE | re.UNICODE,
+)
+
 
 @register.tag
 def render_field(parser, token):
@@ -137,10 +149,13 @@ def render_field(parser, token):
     attribute=value or attribute="a value" for assignment and attribute+=value
     or attribute+="value" for appending.
     """
-    error_msg = '%r tag requires a form field followed by a list of attributes and values in the form attr="value"' % token.split_contents()[0]
+    error_msg = (
+        '%r tag requires a form field followed by a list of attributes and values in the form attr="value"'
+        % token.split_contents()[0]
+    )
     try:
         bits = token.split_contents()
-        tag_name = bits[0]
+        _tag_name = bits[0]
         form_field = bits[1]
         attr_list = bits[2:]
     except ValueError:
@@ -155,7 +170,11 @@ def render_field(parser, token):
         if not match:
             raise TemplateSyntaxError(error_msg + ": %s" % pair)
         dct = match.groupdict()
-        attr, sign, value = dct['attr'], dct['sign'], parser.compile_filter(dct['value'])
+        attr, sign, value = (
+            dct["attr"],
+            dct["sign"],
+            parser.compile_filter(dct["value"]),
+        )
         if sign == "=":
             set_attrs.append((attr, value))
         else:
@@ -172,16 +191,19 @@ class FieldAttributeNode(Node):
 
     def render(self, context):
         bounded_field = self.field.resolve(context)
-        field = getattr(bounded_field, 'field', None)
-        if (getattr(bounded_field, 'errors', None) and
-            'WIDGET_ERROR_CLASS' in context):
-            bounded_field = append_attr(bounded_field, 'class:%s' %
-                                        context['WIDGET_ERROR_CLASS'])
-        if field and field.required and 'WIDGET_REQUIRED_CLASS' in context:
-            bounded_field = append_attr(bounded_field, 'class:%s' %
-                                        context['WIDGET_REQUIRED_CLASS'])
+        field = getattr(bounded_field, "field", None)
+        if getattr(bounded_field, "errors", None) and "WIDGET_ERROR_CLASS" in context:
+            bounded_field = append_attr(
+                bounded_field, "class:%s" % context["WIDGET_ERROR_CLASS"]
+            )
+        if field and field.required and "WIDGET_REQUIRED_CLASS" in context:
+            bounded_field = append_attr(
+                bounded_field, "class:%s" % context["WIDGET_REQUIRED_CLASS"]
+            )
         for k, v in self.set_attrs:
-            bounded_field = set_attr(bounded_field, '%s:%s' % (k,v.resolve(context)))
+            bounded_field = set_attr(bounded_field, "%s:%s" % (k, v.resolve(context)))
         for k, v in self.append_attrs:
-            bounded_field = append_attr(bounded_field, '%s:%s' % (k,v.resolve(context)))
-        return bounded_field
+            bounded_field = append_attr(
+                bounded_field, "%s:%s" % (k, v.resolve(context))
+            )
+        return str(bounded_field) if bounded_field is not None else ""
